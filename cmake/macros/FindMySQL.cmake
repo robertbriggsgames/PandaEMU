@@ -110,6 +110,19 @@ if(WIN32)
   # read environment variables and change \ to /
   file(TO_CMAKE_PATH "$ENV{PROGRAMFILES}" PROGRAM_FILES_32)
   file(TO_CMAKE_PATH "$ENV{ProgramW6432}" PROGRAM_FILES_64)
+
+  # Collect versioned MySQL install directories (e.g. MySQL Server 8.4)
+  # so new minor versions do not require updating this file.
+  set(_MYSQL_WIN_VERSIONED_PATHS "")
+  foreach(_MYSQL_BASE_DIR "${PROGRAM_FILES_64}/MySQL" "${PROGRAM_FILES_32}/MySQL")
+    if(EXISTS "${_MYSQL_BASE_DIR}")
+      file(GLOB _MYSQL_GLOB_DIRS LIST_DIRECTORIES true "${_MYSQL_BASE_DIR}/MySQL Server *")
+      list(APPEND _MYSQL_WIN_VERSIONED_PATHS ${_MYSQL_GLOB_DIRS})
+    endif()
+  endforeach()
+  list(REMOVE_DUPLICATES _MYSQL_WIN_VERSIONED_PATHS)
+  unset(_MYSQL_BASE_DIR)
+  unset(_MYSQL_GLOB_DIRS)
 endif(WIN32)
 
 find_path(MYSQL_INCLUDE_DIR
@@ -119,6 +132,7 @@ find_path(MYSQL_INCLUDE_DIR
     ${_MYSQL_ROOT_HINTS}
   PATHS
     ${MYSQL_ADD_INCLUDE_PATH}
+    ${_MYSQL_WIN_VERSIONED_PATHS}
     /usr/include
     /usr/include/mysql
     /usr/local/include
@@ -190,6 +204,7 @@ if(WIN32)
       ${_MYSQL_ROOT_HINTS}
     PATHS
       ${MYSQL_ADD_LIBRARIES_PATH}
+      ${_MYSQL_WIN_VERSIONED_PATHS}
       "${PROGRAM_FILES_64}/MySQL/MySQL Server 8.3"
       "${PROGRAM_FILES_64}/MySQL/MySQL Server 8.2"
       "${PROGRAM_FILES_64}/MySQL/MySQL Server 8.1"
@@ -265,6 +280,7 @@ if(WIN32)
     HINTS
       ${_MYSQL_ROOT_HINTS}
     PATHS
+      ${_MYSQL_WIN_VERSIONED_PATHS}
       "${PROGRAM_FILES_64}/MySQL/MySQL Server 8.3"
       "${PROGRAM_FILES_64}/MySQL/MySQL Server 8.2"
       "${PROGRAM_FILES_64}/MySQL/MySQL Server 8.1"
