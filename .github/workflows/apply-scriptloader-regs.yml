@@ -1,0 +1,31 @@
+name: Apply ScriptLoader regs patch
+on:
+  workflow_dispatch:
+  push:
+    branches: [cursor/pandaria-progress-gate-b61d]
+    paths:
+      - 'patches/scriptloader-pandaria-regs.patch'
+      - '.github/workflows/apply-scriptloader-regs.yml'
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cursor/pandaria-progress-gate-b61d
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply patch if needed
+        run: |
+          set -euo pipefail
+          if grep -q 'AddSC_npc_reagent_bank' src/server/scripts/ScriptLoader/ScriptLoader.cpp; then
+            echo 'Already applied'
+            exit 0
+          fi
+          patch -p1 < patches/scriptloader-pandaria-regs.patch
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/server/scripts/ScriptLoader/ScriptLoader.cpp
+          git commit -m 'Register pandaria_progress_gate and npc_reagent_bank in ScriptLoader'
+          git push origin HEAD:cursor/pandaria-progress-gate-b61d
