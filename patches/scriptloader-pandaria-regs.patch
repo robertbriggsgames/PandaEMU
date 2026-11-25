@@ -1,0 +1,20 @@
+--- a/src/server/scripts/ScriptLoader/ScriptLoader.cpp
++++ b/src/server/scripts/ScriptLoader/ScriptLoader.cpp
+@@ -2141,6 +2141,8 @@
+ void AddSC_boost_profession();
+ void AddSC_custom_items();
+ void AddSC_solocraft_system();
++void AddSC_npc_reagent_bank();
++void AddSC_pandaria_progress_gate();
+ 
+ void AddCustomScripts()
+ {
+@@ -2152,6 +2154,8 @@
+ //AddSC_boost_profession();
+ //AddSC_custom_items();
+ 	AddSC_solocraft_system();
++	AddSC_npc_reagent_bank();
++	AddSC_pandaria_progress_gate();
+ 
+ #endif
+     AddSC_Anticheat();
